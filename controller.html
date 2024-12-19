@@ -21,7 +21,7 @@
             border-collapse: collapse;
             width: 100%;
             text-align: center;
-            margin-bottom: 20px; /* 新表格與其它元素的間距 */
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid black;
@@ -91,14 +91,13 @@
         <button id="hideButton">隱藏表格</button>
         <a href="display.html">前往顯示器</a>
         
-        <!-- 新增的遊戲人數輸入框和按鈕 -->
         <h2>設置遊戲人數</h2>
         <input type="number" id="playerCount" placeholder="輸入遊戲人數 (1-26)" min="1" max="26">
         <button id="setPlayerCountButton">設置人數</button>
     </div>
     <script>
         let rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
-        let playerCount = 26; // 默認遊戲人數
+        let playerCount = 26;
 
         function generateUniqueRandomNumbers(count, min, max) {
             const numbers = new Set();
@@ -110,20 +109,19 @@
         }
 
         function initializeRooms(count) {
-            const realNumbers = Array.from({length: count}, (_, i) => i + 1); // 生成真實數字 1-count
+            const realNumbers = Array.from({ length: count }, (_, i) => i + 1); // 生成真實數字 1-count
             const randomNumbers = generateUniqueRandomNumbers(count, 1, 99); // 確保隨機數字唯一
             const newRooms = [[], [], [], [], [], []];
 
-            // 重新分配真實數字和隨機數字到房間
+            // 將真實數字和隨機數字隨機分配到房間
             realNumbers.forEach((num, index) => {
-                newRooms[index % 5].push({real: num, random: randomNumbers[index]});
+                const roomIndex = index % 5; // 將真實數字分配到房間
+                newRooms[roomIndex].push({ real: num, random: randomNumbers[index] });
             });
 
-            // 更新已淘汰房間
-            newRooms[5] = [];
-
+            newRooms[5] = []; // 清空已淘汰房間
             localStorage.setItem('rooms', JSON.stringify(newRooms));
-            rooms = newRooms; // 更新當前房間數據
+            rooms = newRooms; // 更新房間數據
         }
 
         function updateTable() {
@@ -142,14 +140,14 @@
         document.getElementById('moveButton').onclick = function() {
             const randomNumber = parseInt(document.getElementById('randomNumber').value);
             const realNumber = parseInt(document.getElementById('realNumber').value);
-            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
-            const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1; // 調整索引
+            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1;
+            const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1;
 
             let movedItem;
             if (!isNaN(randomNumber)) {
                 const movedIndex = rooms[fromRoomNumber].findIndex(item => item.random === randomNumber);
                 if (movedIndex !== -1) {
-                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
+                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0];
                 } else {
                     alert(`隨機號碼 ${randomNumber} 不在房間 ${fromRoomNumber + 1} 中`);
                     return;
@@ -157,7 +155,7 @@
             } else if (!isNaN(realNumber)) {
                 const movedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
                 if (movedIndex !== -1) {
-                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
+                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0];
                 } else {
                     alert(`真實數字 ${realNumber} 不在房間 ${fromRoomNumber + 1} 中`);
                     return;
@@ -168,28 +166,28 @@
             }
 
             if (movedItem) {
-                rooms[toRoomNumber].push(movedItem); // 添加到目標房間
+                rooms[toRoomNumber].push(movedItem);
                 localStorage.setItem('rooms', JSON.stringify(rooms));
-                updateTable(); // 更新顯示
+                updateTable();
             }
         };
 
         document.getElementById('eliminateButton').onclick = function() {
             const realNumber = parseInt(document.getElementById('realNumber').value);
-            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
+            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1;
 
             const eliminatedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
             if (eliminatedIndex !== -1) {
                 const eliminatedItem = rooms[fromRoomNumber].splice(eliminatedIndex, 1)[0];
-                rooms[5].push(eliminatedItem); // 移至已淘汰
+                rooms[5].push(eliminatedItem);
                 localStorage.setItem('rooms', JSON.stringify(rooms));
-                updateTable(); // 更新顯示
+                updateTable();
             }
         };
 
         document.getElementById('resetButton').onclick = function() {
             initializeRooms(playerCount); // 重置房間和數字
-            updateTable(); // 更新顯示
+            updateTable();
         };
 
         document.getElementById('setPlayerCountButton').onclick = function() {
@@ -222,10 +220,10 @@
         setInterval(function() {
             const updatedRooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             if (JSON.stringify(updatedRooms) !== JSON.stringify(rooms)) {
-                rooms = updatedRooms; // 更新數據
-                updateTable(); // 更新表格顯示
+                rooms = updatedRooms;
+                updateTable();
             }
-        }, 1000); // 每秒檢查一次
+        }, 1000);
 
         window.onload = updateTable; // 當頁面加載時更新顯示
     </script>
