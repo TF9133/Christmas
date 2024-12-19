@@ -97,7 +97,8 @@
         <button id="setPlayerCountButton">設置人數</button>
     </div>
     <script>
-        const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
+        let rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
+        let playerCount = 26; // 默認遊戲人數
 
         function generateUniqueRandomNumbers(count, min, max) {
             const numbers = new Set();
@@ -118,10 +119,10 @@
             });
 
             localStorage.setItem('rooms', JSON.stringify(newRooms));
+            rooms = newRooms; // 更新當前房間數據
         }
 
         function updateTable() {
-            const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             for (let i = 0; i < 5; i++) {
                 const roomData = rooms[i].map(item => item.random).join(', ');
                 document.getElementById(`room${i + 1}`).innerText = roomData;
@@ -139,7 +140,6 @@
             const realNumber = parseInt(document.getElementById('realNumber').value);
             const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
             const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1; // 調整索引
-            const rooms = JSON.parse(localStorage.getItem('rooms'));
 
             let movedItem;
             if (!isNaN(randomNumber)) {
@@ -173,7 +173,6 @@
         document.getElementById('eliminateButton').onclick = function() {
             const realNumber = parseInt(document.getElementById('realNumber').value);
             const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
-            const rooms = JSON.parse(localStorage.getItem('rooms'));
 
             const eliminatedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
             if (eliminatedIndex !== -1) {
@@ -185,10 +184,15 @@
         };
 
         document.getElementById('resetButton').onclick = function() {
-            const playerCount = parseInt(document.getElementById('playerCount').value);
-            if (!isNaN(playerCount) && playerCount >= 1 && playerCount <= 26) {
-                initializeRooms(playerCount); // 重置房間和數字
-                updateTable(); // 更新顯示
+            initializeRooms(playerCount); // 重置房間和數字
+            updateTable(); // 更新顯示
+        };
+
+        document.getElementById('setPlayerCountButton').onclick = function() {
+            const count = parseInt(document.getElementById('playerCount').value);
+            if (!isNaN(count) && count >= 1 && count <= 26) {
+                playerCount = count; // 更新遊戲人數
+                alert(`遊戲人數已設置為 ${playerCount}`);
             } else {
                 alert("請輸入有效的遊戲人數 (1-26)！");
             }
@@ -196,7 +200,6 @@
 
         document.getElementById('queryButton').onclick = function() {
             const queryNumber = parseInt(document.getElementById('queryInput').value);
-            const rooms = JSON.parse(localStorage.getItem('rooms'));
             let found = false;
 
             for (let i = 0; i < 5; i++) {
@@ -215,8 +218,7 @@
         setInterval(function() {
             const updatedRooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             if (JSON.stringify(updatedRooms) !== JSON.stringify(rooms)) {
-                rooms.length = 0; // 清空原有數組
-                rooms.push(...updatedRooms); // 更新數據
+                rooms = updatedRooms; // 更新數據
                 updateTable(); // 更新表格顯示
             }
         }, 1000); // 每秒檢查一次
