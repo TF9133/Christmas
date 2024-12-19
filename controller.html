@@ -85,6 +85,7 @@
         <input type="text" id="toRoomNumber" placeholder="目標房間號 (1-5)">
         <button id="moveButton">移動</button>
         <button id="eliminateButton">淘汰</button>
+        <button id="resetButton">重置所有數字</button>
         <input type="text" id="queryInput" placeholder="查詢輸入格 (真實數字)">
         <button id="queryButton">查詢</button>
         <button id="hideButton">隱藏表格</button>
@@ -93,7 +94,20 @@
     <script>
         const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
 
+        function initializeRooms() {
+            const realNumbers = Array.from({length: 26}, (_, i) => i + 1); // 真實數字 1-26
+            const randomNumbers = Array.from({length: 26}, () => Math.floor(Math.random() * 99) + 1); // 隨機數字 1-99
+            const newRooms = [[], [], [], [], [], []];
+
+            realNumbers.forEach((num, index) => {
+                newRooms[index % 5].push({real: num, random: randomNumbers[index]});
+            });
+
+            localStorage.setItem('rooms', JSON.stringify(newRooms));
+        }
+
         function updateTable() {
+            const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             for (let i = 0; i < 5; i++) {
                 const roomData = rooms[i].map(item => item.random).join(', ');
                 document.getElementById(`room${i + 1}`).innerText = roomData;
@@ -112,7 +126,6 @@
             const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
-            // 尋找要移動的隨機號碼
             const movedIndex = rooms[fromRoomNumber].findIndex(item => item.random === randomNumber);
             if (movedIndex !== -1) {
                 const movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
@@ -136,6 +149,11 @@
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
             }
+        };
+
+        document.getElementById('resetButton').onclick = function() {
+            initializeRooms(); // 重置房間
+            updateTable(); // 更新顯示
         };
 
         document.getElementById('queryButton').onclick = function() {
