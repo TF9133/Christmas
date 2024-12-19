@@ -173,15 +173,36 @@
         };
 
         document.getElementById('eliminateButton').onclick = function() {
+            const randomNumber = parseInt(document.getElementById('randomNumber').value);
             const realNumber = parseInt(document.getElementById('realNumber').value);
-            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1;
 
-            const eliminatedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
-            if (eliminatedIndex !== -1) {
-                const eliminatedItem = rooms[fromRoomNumber].splice(eliminatedIndex, 1)[0];
-                rooms[5].push(eliminatedItem);
-                localStorage.setItem('rooms', JSON.stringify(rooms));
-                updateTable();
+            let eliminatedItem;
+            if (!isNaN(randomNumber)) {
+                for (let i = 0; i < 5; i++) {
+                    const eliminatedIndex = rooms[i].findIndex(item => item.random === randomNumber);
+                    if (eliminatedIndex !== -1) {
+                        eliminatedItem = rooms[i].splice(eliminatedIndex, 1)[0];
+                        rooms[5].push(eliminatedItem); // 添加到已淘汰房間
+                        localStorage.setItem('rooms', JSON.stringify(rooms));
+                        updateTable();
+                        return;
+                    }
+                }
+                alert(`隨機號碼 ${randomNumber} 不在任何房間中`);
+            } else if (!isNaN(realNumber)) {
+                for (let i = 0; i < 5; i++) {
+                    const eliminatedIndex = rooms[i].findIndex(item => item.real === realNumber);
+                    if (eliminatedIndex !== -1) {
+                        eliminatedItem = rooms[i].splice(eliminatedIndex, 1)[0];
+                        rooms[5].push(eliminatedItem); // 添加到已淘汰房間
+                        localStorage.setItem('rooms', JSON.stringify(rooms));
+                        updateTable();
+                        return;
+                    }
+                }
+                alert(`真實數字 ${realNumber} 不在任何房間中`);
+            } else {
+                alert("請輸入隨機號碼或真實數字！");
             }
         };
 
