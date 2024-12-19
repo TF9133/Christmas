@@ -29,6 +29,12 @@
             <input type="number" id="kill-number" placeholder="輸入要淘汰的號碼">
         </div>
         <button id="kill-button">淘汰</button>
+        <br/><br/>
+        <div class="input-group">
+            <label for="query-number">查詢號碼</label>
+            <input type="number" id="query-number" placeholder="輸入真實號碼查詢">
+        </div>
+        <button id="query-button">查詢</button>
         <div id="status-message"></div>
     </div>
 
@@ -37,6 +43,7 @@
         document.getElementById('start-button').addEventListener('click', () => {
             const randomNumbers = Array.from({ length: 26 }, (_, i) => i + 1); // 生成 1 至 26 的號碼
             localStorage.setItem("randomNumbers", JSON.stringify(randomNumbers));
+            localStorage.setItem("eliminated", JSON.stringify([])); // 清空已淘汰的號碼
             document.getElementById('status-message').textContent = "遊戲開始！隨機號碼已分配。";
         });
 
@@ -44,15 +51,36 @@
         document.getElementById('kill-button').addEventListener('click', () => {
             const killNumber = parseInt(document.getElementById('kill-number').value);
             const randomNumbers = JSON.parse(localStorage.getItem("randomNumbers")) || [];
+            const eliminatedNumbers = JSON.parse(localStorage.getItem("eliminated")) || [];
 
             const index = randomNumbers.indexOf(killNumber);
 
             if (index > -1) {
                 randomNumbers.splice(index, 1);
+                eliminatedNumbers.push(killNumber); // 將被淘汰的號碼加入已淘汰的列表
                 localStorage.setItem("randomNumbers", JSON.stringify(randomNumbers));
+                localStorage.setItem("eliminated", JSON.stringify(eliminatedNumbers));
                 document.getElementById('status-message').textContent = `號碼 ${killNumber} 已被淘汰。`;
             } else {
                 document.getElementById('status-message').textContent = `號碼 ${killNumber} 不在列表中！`;
+            }
+        });
+
+        // 查詢功能
+        document.getElementById('query-button').addEventListener('click', () => {
+            const queryNumber = parseInt(document.getElementById('query-number').value);
+            const randomNumbers = JSON.parse(localStorage.getItem("randomNumbers"));
+
+            if (queryNumber < 1 || queryNumber > 26 || isNaN(queryNumber)) {
+                alert('請輸入有效的號碼（1到26的範圍）。');
+                return;
+            }
+
+            const index = randomNumbers.indexOf(queryNumber);
+            if (index !== -1) {
+                document.getElementById('status-message').textContent = `你的隨機號碼為 ${randomNumbers[index]}。`;
+            } else {
+                document.getElementById('status-message').textContent = `號碼 ${queryNumber} 不在列表中，可能已被淘汰。`;
             }
         });
     </script>
