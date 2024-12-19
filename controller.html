@@ -122,29 +122,48 @@
 
         document.getElementById('moveButton').onclick = function() {
             const randomNumber = parseInt(document.getElementById('randomNumber').value);
+            const realNumber = parseInt(document.getElementById('realNumber').value);
             const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
             const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
-            const movedIndex = rooms[fromRoomNumber].findIndex(item => item.random === randomNumber);
-            if (movedIndex !== -1) {
-                const movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
+            let movedItem;
+            if (!isNaN(randomNumber)) {
+                const movedIndex = rooms[fromRoomNumber].findIndex(item => item.random === randomNumber);
+                if (movedIndex !== -1) {
+                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
+                } else {
+                    alert(`隨機號碼 ${randomNumber} 不在房間 ${fromRoomNumber + 1} 中`);
+                    return;
+                }
+            } else if (!isNaN(realNumber)) {
+                const movedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
+                if (movedIndex !== -1) {
+                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
+                } else {
+                    alert(`真實數字 ${realNumber} 不在房間 ${fromRoomNumber + 1} 中`);
+                    return;
+                }
+            } else {
+                alert("請輸入隨機號碼或真實數字！");
+                return;
+            }
+
+            if (movedItem) {
                 rooms[toRoomNumber].push(movedItem); // 添加到目標房間
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
-            } else {
-                alert(`隨機號碼 ${randomNumber} 不在房間 ${fromRoomNumber + 1} 中`);
             }
         };
 
         document.getElementById('eliminateButton').onclick = function() {
             const realNumber = parseInt(document.getElementById('realNumber').value);
-            const roomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
+            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
-            const eliminatedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
+            const eliminatedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
             if (eliminatedIndex !== -1) {
-                const eliminatedItem = rooms[roomNumber].splice(eliminatedIndex, 1)[0];
+                const eliminatedItem = rooms[fromRoomNumber].splice(eliminatedIndex, 1)[0];
                 rooms[5].push(eliminatedItem); // 移至已淘汰
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
