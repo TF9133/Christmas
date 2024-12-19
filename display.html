@@ -53,17 +53,15 @@
         </table>
     </div>
     <script>
-        // 模擬隨機數字分配至房間
-        const randomNumbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
-        const rooms = [[], [], [], [], []];
-
-        randomNumbers.forEach((num, index) => {
-            rooms[index % 5].push(num);
-        });
-
-        for (let i = 0; i < 5; i++) {
-            document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
+        function updateDisplay() {
+            const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
+            for (let i = 0; i < 5; i++) {
+                document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
+            }
+            document.getElementById('eliminated').innerText = rooms[5].join(', ');
         }
+
+        window.onload = updateDisplay; // 當頁面加載時更新顯示
     </script>
 </body>
 </html>
