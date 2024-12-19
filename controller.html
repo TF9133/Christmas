@@ -110,4 +110,54 @@
             document.getElementById('realEliminated').innerText = rooms[5].join(', '); // 確保兩個表格的已淘汰數字一致
         }
 
-        document.getElementById('removeButton').
+        document.getElementById('removeButton').onclick = function() {
+            const number = parseInt(document.getElementById('number').value);
+            const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
+            const rooms = JSON.parse(localStorage.getItem('rooms'));
+
+            // 移除邏輯
+            const removedIndex = rooms[roomNumber].indexOf(number);
+            if (removedIndex !== -1) {
+                const removedNumber = rooms[roomNumber].splice(removedIndex, 1)[0];
+                rooms[5].push(removedNumber); // 移至已淘汰
+                localStorage.setItem('rooms', JSON.stringify(rooms));
+                updateTable(); // 更新顯示
+            }
+        };
+
+        document.getElementById('eliminateButton').onclick = function() {
+            const number = parseInt(document.getElementById('number').value);
+            const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
+            const rooms = JSON.parse(localStorage.getItem('rooms'));
+
+            // 淘汰邏輯
+            const eliminatedIndex = rooms[roomNumber].indexOf(number);
+            if (eliminatedIndex !== -1) {
+                const eliminatedNumber = rooms[roomNumber].splice(eliminatedIndex, 1)[0];
+                rooms[5].push(eliminatedNumber); // 移至已淘汰
+                localStorage.setItem('rooms', JSON.stringify(rooms));
+                updateTable(); // 更新顯示
+            }
+        };
+
+        document.getElementById('queryButton').onclick = function() {
+            const queryNumber = parseInt(document.getElementById('queryInput').value);
+            const rooms = JSON.parse(localStorage.getItem('rooms'));
+            let found = false;
+
+            for (let i = 0; i < 5; i++) {
+                if (rooms[i].includes(queryNumber)) {
+                    alert(`真實數字 ${queryNumber} 在 房間 ${i + 1}`);
+                    found = true;
+                    break;
+                } 
+            }
+            if (!found) {
+                alert(`真實數字 ${queryNumber} 不在任何房間中`);
+            }
+        };
+
+        window.onload = updateTable; // 當頁面加載時更新顯示
+    </script>
+</body>
+</html>
