@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head> 
-    <meta charset="UTF-8"> 
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>顯示器</title> 
+    <title>顯示器</title>
     <style>
         body {
             background-color: #fdf8e4;
@@ -57,9 +57,11 @@
         function updateDisplay() {
             const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             for (let i = 0; i < 5; i++) {
-                document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
+                const roomData = rooms[i].map(item => item.random).join(', ');
+                document.getElementById(`room${i + 1}`).innerText = roomData;
             }
-            document.getElementById('eliminated').innerText = rooms[5].join(', ');
+            const eliminated = rooms[5].map(item => item.real).join(', ');
+            document.getElementById('eliminated').innerText = eliminated; // 只顯示真實已淘汰的數字
         }
 
         window.onload = updateDisplay; // 當頁面加載時更新顯示
