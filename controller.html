@@ -86,6 +86,7 @@
         <button id="moveButton">移動</button>
         <button id="eliminateButton">淘汰</button>
         <button id="resetButton">重置所有數字</button>
+        <button id="assignButton">隨機分配房間</button>
         <input type="text" id="queryInput" placeholder="查詢輸入格 (真實數字)">
         <button id="queryButton">查詢</button>
         <button id="hideButton">隱藏表格</button>
@@ -109,19 +110,18 @@
         }
 
         function initializeRooms(count) {
-            const realNumbers = Array.from({ length: count }, (_, i) => i + 1); // 生成真實數字 1-count
-            const randomNumbers = generateUniqueRandomNumbers(count, 1, 99); // 確保隨機數字唯一
+            const realNumbers = Array.from({ length: count }, (_, i) => i + 1);
+            const randomNumbers = generateUniqueRandomNumbers(count, 1, 99);
             const newRooms = [[], [], [], [], [], []];
 
-            // 將真實數字和隨機數字隨機分配到房間
             realNumbers.forEach((num, index) => {
-                const roomIndex = index % 5; // 將真實數字分配到房間
+                const roomIndex = index % 5;
                 newRooms[roomIndex].push({ real: num, random: randomNumbers[index] });
             });
 
-            newRooms[5] = []; // 清空已淘汰房間
+            newRooms[5] = [];
             localStorage.setItem('rooms', JSON.stringify(newRooms));
-            rooms = newRooms; // 更新房間數據
+            rooms = newRooms;
         }
 
         function updateTable() {
@@ -134,7 +134,7 @@
             }
             const eliminated = rooms[5].map(item => item.real).join(', ');
             document.getElementById('eliminated').innerText = eliminated;
-            document.getElementById('realEliminated').innerText = eliminated; // 確保兩個表格的已淘汰數字一致
+            document.getElementById('realEliminated').innerText = eliminated;
         }
 
         document.getElementById('moveButton').onclick = function() {
@@ -186,14 +186,36 @@
         };
 
         document.getElementById('resetButton').onclick = function() {
-            initializeRooms(playerCount); // 重置房間和數字
+            initializeRooms(playerCount);
+            updateTable();
+        };
+
+        document.getElementById('assignButton').onclick = function() {
+            const allParticipants = [];
+            for (let i = 0; i < 5; i++) {
+                allParticipants.push(...rooms[i]); // 收集所有未淘汰的參與者
+            }
+
+            // 清空所有房間
+            for (let i = 0; i < 5; i++) {
+                rooms[i] = [];
+            }
+
+            // 隨機分配參與者到房間
+            allParticipants.sort(() => Math.random() - 0.5); // 隨機打亂
+            allParticipants.forEach((participant, index) => {
+                const roomIndex = index % 5; // 將參與者分配到房間
+                rooms[roomIndex].push(participant);
+            });
+
+            localStorage.setItem('rooms', JSON.stringify(rooms));
             updateTable();
         };
 
         document.getElementById('setPlayerCountButton').onclick = function() {
             const count = parseInt(document.getElementById('playerCount').value);
             if (!isNaN(count) && count >= 1 && count <= 26) {
-                playerCount = count; // 更新遊戲人數
+                playerCount = count;
                 alert(`遊戲人數已設置為 ${playerCount}`);
             } else {
                 alert("請輸入有效的遊戲人數 (1-26)！");
@@ -216,7 +238,6 @@
             }
         };
 
-        // 自動更新
         setInterval(function() {
             const updatedRooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             if (JSON.stringify(updatedRooms) !== JSON.stringify(rooms)) {
@@ -225,7 +246,7 @@
             }
         }, 1000);
 
-        window.onload = updateTable; // 當頁面加載時更新顯示
+        window.onload = updateTable;
     </script>
 </body>
 </html>
