@@ -94,9 +94,18 @@
     <script>
         const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
 
+        function generateUniqueRandomNumbers(count, min, max) {
+            const numbers = new Set();
+            while (numbers.size < count) {
+                const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+                numbers.add(randomNum);
+            }
+            return Array.from(numbers);
+        }
+
         function initializeRooms() {
             const realNumbers = Array.from({length: 26}, (_, i) => i + 1); // 真實數字 1-26
-            const randomNumbers = Array.from({length: 26}, () => Math.floor(Math.random() * 99) + 1); // 隨機數字 1-99
+            const randomNumbers = generateUniqueRandomNumbers(26, 1, 99); // 確保隨機數字唯一
             const newRooms = [[], [], [], [], [], []];
 
             realNumbers.forEach((num, index) => {
