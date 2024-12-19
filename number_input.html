@@ -26,6 +26,7 @@
             padding: 10px 20px;
             font-size: 1.2em;
             cursor: pointer;
+            margin-top: 10px;
         }
         .result {
             margin-top: 20px;
@@ -38,6 +39,7 @@
         <h1>查詢你的號碼</h1>
         <input type="number" id="realNumberInput" placeholder="輸入真實數字 (1-26)">
         <button id="submitButton">提交</button>
+        <button id="hideButton" style="display:none;">隱藏結果</button>
         <div class="result" id="resultMessage"></div>
     </div>
 
@@ -57,6 +59,7 @@
                 if (participant) {
                     const randomNumber = participant.random;
                     document.getElementById('resultMessage').innerText = `你的號碼為 ${randomNumber}，位於房間 ${i + 1}`;
+                    document.getElementById('hideButton').style.display = 'inline-block'; // 顯示隱藏按鈕
                     found = true;
                     break;
                 }
@@ -64,7 +67,13 @@
 
             if (!found) {
                 document.getElementById('resultMessage').innerText = "未找到該號碼。";
+                document.getElementById('hideButton').style.display = 'none'; // 隱藏按鈕
             }
+        };
+
+        document.getElementById('hideButton').onclick = function() {
+            document.getElementById('resultMessage').innerText = ""; // 清空結果
+            this.style.display = 'none'; // 隱藏按鈕
         };
     </script>
 </body>
