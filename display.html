@@ -6,71 +6,64 @@
     <title>顯示器</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #fdf8e4; /* 淡黃色背景 */
+            background-color: #fdf8e4;
+            color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
             padding: 20px;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
             text-align: center;
         }
-        .title {
-            font-size: 36px; /* 調整標題大小以適應頁面 */
-            margin-bottom: 20px;
-        }
-        .table {
-            border-collapse: collapse;
-            margin: 0 auto;
-        }
-        .table th, .table td {
+        th, td {
             border: 1px solid black;
             padding: 10px;
+        }
+        h1 {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="title">顯示器: 隨機分配的號碼</div>
-    <table class="table" id="display-table">
-        <tr>
-            <th>玩家編號</th>
-            <th>隨機號碼</th>
-            <th>房間狀態</th>
-        </tr>
-        <tbody id="table-body">
-            <!-- 將用 JavaScript 填充這裡 -->
-        </tbody>
-    </table>
-
-    <div class="title">已淘汰的號碼</div>
-    <div id="eliminated-numbers" class="table">
-        <p>目前沒有淘汰的號碼。</p>
+    <div>
+        <h1>房間和隨機號碼</h1>
+        <table>
+            <tr>
+                <th>房間一</th>
+                <th>房間二</th>
+                <th>房間三</th>
+                <th>房間四</th>
+                <th>房間五</th>
+                <th>已淘汰</th>
+            </tr>
+            <tr>
+                <td id="room1"></td>
+                <td id="room2"></td>
+                <td id="room3"></td>
+                <td id="room4"></td>
+                <td id="room5"></td>
+                <td id="eliminated"></td>
+            </tr>
+        </table>
     </div>
-
     <script>
-        function updateDisplay() {
-            const randomNumbers = JSON.parse(localStorage.getItem("randomNumbers")) || [];
-            const eliminatedNumbers = JSON.parse(localStorage.getItem("eliminated")) || [];
+        // 模擬隨機數字分配至房間
+        const randomNumbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+        const rooms = [[], [], [], [], []];
 
-            const tableBody = document.getElementById("table-body");
-            tableBody.innerHTML = ""; // 清空表格內容
+        randomNumbers.forEach((num, index) => {
+            rooms[index % 5].push(num);
+        });
 
-            randomNumbers.forEach((num, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>玩家 ${index + 1}</td><td>${num}</td><td>有效</td>`;
-                tableBody.appendChild(row);
-            });
-
-            // 更新已淘汰的號碼
-            const eliminatedContainer = document.getElementById("eliminated-numbers");
-            if (eliminatedNumbers.length > 0) {
-                eliminatedContainer.innerHTML = eliminatedNumbers.join(', ');
-            } else {
-                eliminatedContainer.innerHTML = "<p>目前沒有淘汰的號碼。</p>";
-            }
+        for (let i = 0; i < 5; i++) {
+            document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
         }
-
-        // 每 1 秒更新顯示器
-        setInterval(updateDisplay, 1000);
-
-        // 初始化顯示
-        updateDisplay();
     </script>
 </body>
 </html>
