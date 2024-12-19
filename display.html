@@ -7,62 +7,58 @@
     <style>
         body {
             background-color: #fdf8e4;
-            color: black;
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .table-container {
+            width: 80%; /* 設置表格容器寬度為 80% */
         }
         table {
             border-collapse: collapse;
-            width: 100%;
-            max-width: 800px; /* 設定最大寬度 */
-            margin: auto; /* 自動居中 */
+            width: 100%; /* 表格佔滿容器 */
+            text-align: center;
+            font-size: 1.5em; /* 調整字體大小 */
+            margin-bottom: 20px;
         }
         th, td {
-            border: 1px solid #202020; /* 設定邊框顏色 */
-            padding: 15px; /* 調整內邊距 */
-            text-align: center;
-            min-width: 100px; /* 設定最小寬度 */
-        }
-        th {
-            background-color: #202020; /* 標題背景顏色 */
-            color: white; /* 標題文字顏色 */
+            border: 2px solid #333;
+            padding: 15px; /* 增加內邊距 */
         }
     </style>
 </head>
 <body>
-    <h1>顯示器</h1>
-    <table>
-        <tr>
-            <th>房間一</th>
-            <th>房間二</th>
-            <th>房間三</th>
-            <th>房間四</th>
-            <th>房間五</th>
-            <th>已淘汰</th>
-        </tr>
-        <tr>
-            <td id="displayRoom1"></td>
-            <td id="displayRoom2"></td>
-            <td id="displayRoom3"></td>
-            <td id="displayRoom4"></td>
-            <td id="displayRoom5"></td>
-            <td id="displayEliminated"></td>
-        </tr>
-    </table>
+    <div class="table-container">
+        <h1>房間和隨機號碼</h1>
+        <table>
+            <tr>
+                <th>房間一</th>
+                <th>房間二</th>
+                <th>房間三</th>
+                <th>房間四</th>
+                <th>房間五</th>
+            </tr>
+            <tr>
+                <td id="room1"></td>
+                <td id="room2"></td>
+                <td id="room3"></td>
+                <td id="room4"></td>
+                <td id="room5"></td>
+            </tr>
+        </table>
+    </div>
     <script>
         function updateDisplay() {
             const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             for (let i = 0; i < 5; i++) {
                 const roomData = rooms[i].map(item => item.random).join(', ');
-                document.getElementById(`displayRoom${i + 1}`).innerText = roomData;
+                document.getElementById(`room${i + 1}`).innerText = roomData;
             }
-            const eliminated = rooms[5].map(item => item.real).join(', ');
-            document.getElementById('displayEliminated').innerText = eliminated;
         }
-
-        // 自動更新
-        setInterval(updateDisplay, 1000); // 每秒更新顯示
 
         window.onload = updateDisplay; // 當頁面加載時更新顯示
     </script>
