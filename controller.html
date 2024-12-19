@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>控制器</title>
@@ -33,6 +33,93 @@
         input {
             margin-bottom: 10px;
         }
+    </style>
+</head>
+<body>
+    <div class="table-container">
+        <h1>房間和隨機號碼</h1>
+        <table>
+            <tr>
+                <th>房間一</th>
+                <th>房間二</th>
+                <th>房間三</th>
+                <th>房間四</th>
+                <th>房間五</th>
+                <th>已淘汰</th>
+            </tr>
+            <tr>
+                <td id="room1"></td>
+                <td id="room2"></td>
+                <td id="room3"></td>
+                <td id="room4"></td>
+                <td id="room5"></td>
+                <td id="eliminated"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="input-container">
+        <input type="text" id="number" placeholder="號碼">
+        <input type="text" id="roomNumber" placeholder="房間號">
+        <input type="text" id="toRoomNumber" placeholder="被移房間號">
+        <button id="removeButton">移除</button>
+        <button id="eliminateButton">淘汰</button>
+        <input type="text" id="queryInput" placeholder="查詢輸入格">
+        <button id="queryButton">查詢</button>
+        <button id="hideButton">隱藏表格</button>
+        <a href="display.html">前往顯示器</a>
+    </div>
+    <script>
+        // 初始化房間數據
+        const randomNumbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+        const rooms = [[], [], [], [], [], []];
+
+        randomNumbers.forEach((num, index) => {
+            rooms[index % 5].push(num);
+        });
+
+        localStorage.setItem('rooms', JSON.stringify(rooms));
+
+        function updateTable() {
+            for (let i = 0; i < 5; i++) {
+                document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
+            }
+            document.getElementById('eliminated').innerText = rooms[5].join(', ');
+        }
+
+        document.getElementById('removeButton').onclick = function() {
+            const number = parseInt(document.getElementById('number').value);
+            const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
+            const rooms = JSON.parse(localStorage.getItem('rooms'));
+
+            // 移除邏輯
+            const removedIndex = rooms[roomNumber].indexOf(number);
+            if (removedIndex !== -1) {
+                const removedNumber = rooms[roomNumber].splice(removedIndex, 1)[0];
+                rooms[5].push(removedNumber); // 移至已淘汰
+                localStorage.setItem('rooms', JSON.stringify(rooms));
+                updateTable(); // 更新顯示
+            }
+        };
+
+        document.getElementById('eliminateButton').onclick = function() {
+            const number = parseInt(document.getElementById('number').value);
+            const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
+            const rooms = JSON.parse(localStorage.getItem('rooms'));
+
+            // 淘汰邏輯
+            const eliminatedIndex = rooms[roomNumber].indexOf(number);
+            if (eliminatedIndex !== -1) {
+                const eliminatedNumber = rooms[roomNumber].splice(eliminatedIndex, 1)[0];
+                rooms[5].push(eliminatedNumber); // 移至已淘汰
+                localStorage.setItem('rooms', JSON.stringify(rooms));
+                updateTable(); // 更新顯示
+            }
+        };
+
+        window.onload = updateTable; // 當頁面加載時更新顯示
+    </script>
+</body>
+</html>
     </style>
 </head>
 <body>
