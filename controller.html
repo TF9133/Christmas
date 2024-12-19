@@ -79,11 +79,11 @@
         </table>
     </div>
     <div class="input-container">
-        <input type="text" id="number" placeholder="號碼 (隨機數字)">
+        <input type="text" id="randomNumber" placeholder="隨機號碼 (1-99)">
         <input type="text" id="realNumber" placeholder="真實數字 (1-26)">
-        <input type="text" id="roomNumber" placeholder="房間號 (1-5)">
-        <input type="text" id="toRoomNumber" placeholder="被移房間號 (1-5)">
-        <button id="removeButton">移除</button>
+        <input type="text" id="fromRoomNumber" placeholder="當前房間號 (1-5)">
+        <input type="text" id="toRoomNumber" placeholder="目標房間號 (1-5)">
+        <button id="moveButton">移動</button>
         <button id="eliminateButton">淘汰</button>
         <input type="text" id="queryInput" placeholder="查詢輸入格 (真實數字)">
         <button id="queryButton">查詢</button>
@@ -97,7 +97,7 @@
             for (let i = 0; i < 5; i++) {
                 const roomData = rooms[i].map(item => item.random).join(', ');
                 document.getElementById(`room${i + 1}`).innerText = roomData;
-                
+
                 const realRoomData = rooms[i].map(item => item.real).join(', ');
                 document.getElementById(`realRoom${i + 1}`).innerText = realRoomData;
             }
@@ -106,23 +106,27 @@
             document.getElementById('realEliminated').innerText = eliminated; // 確保兩個表格的已淘汰數字一致
         }
 
-        document.getElementById('removeButton').onclick = function() {
-            const realNumber = parseInt(document.getElementById('realNumber').value);
-            const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
+        document.getElementById('moveButton').onclick = function() {
+            const randomNumber = parseInt(document.getElementById('randomNumber').value);
+            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
+            const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
-            const removedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
-            if (removedIndex !== -1) {
-                const removedItem = rooms[roomNumber].splice(removedIndex, 1)[0];
-                rooms[5].push(removedItem); // 移至已淘汰
+            // 尋找要移動的隨機號碼
+            const movedIndex = rooms[fromRoomNumber].findIndex(item => item.random === randomNumber);
+            if (movedIndex !== -1) {
+                const movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0]; // 從來源房間中移除
+                rooms[toRoomNumber].push(movedItem); // 添加到目標房間
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
+            } else {
+                alert(`隨機號碼 ${randomNumber} 不在房間 ${fromRoomNumber + 1} 中`);
             }
         };
 
         document.getElementById('eliminateButton').onclick = function() {
             const realNumber = parseInt(document.getElementById('realNumber').value);
-            const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
+            const roomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
             const eliminatedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
