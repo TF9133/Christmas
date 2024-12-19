@@ -114,9 +114,13 @@
             const randomNumbers = generateUniqueRandomNumbers(count, 1, 99); // 確保隨機數字唯一
             const newRooms = [[], [], [], [], [], []];
 
+            // 重新分配真實數字和隨機數字到房間
             realNumbers.forEach((num, index) => {
                 newRooms[index % 5].push({real: num, random: randomNumbers[index]});
             });
+
+            // 更新已淘汰房間
+            newRooms[5] = [];
 
             localStorage.setItem('rooms', JSON.stringify(newRooms));
             rooms = newRooms; // 更新當前房間數據
