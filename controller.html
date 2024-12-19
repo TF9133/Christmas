@@ -90,6 +90,11 @@
         <button id="queryButton">查詢</button>
         <button id="hideButton">隱藏表格</button>
         <a href="display.html">前往顯示器</a>
+        
+        <!-- 新增的遊戲人數輸入框和按鈕 -->
+        <h2>設置遊戲人數</h2>
+        <input type="number" id="playerCount" placeholder="輸入遊戲人數 (1-26)" min="1" max="26">
+        <button id="setPlayerCountButton">設置人數</button>
     </div>
     <script>
         const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
@@ -103,9 +108,9 @@
             return Array.from(numbers);
         }
 
-        function initializeRooms() {
-            const realNumbers = Array.from({length: 26}, (_, i) => i + 1); // 真實數字 1-26
-            const randomNumbers = generateUniqueRandomNumbers(26, 1, 99); // 確保隨機數字唯一
+        function initializeRooms(count) {
+            const realNumbers = Array.from({length: count}, (_, i) => i + 1); // 生成真實數字 1-count
+            const randomNumbers = generateUniqueRandomNumbers(count, 1, 99); // 確保隨機數字唯一
             const newRooms = [[], [], [], [], [], []];
 
             realNumbers.forEach((num, index) => {
@@ -180,8 +185,13 @@
         };
 
         document.getElementById('resetButton').onclick = function() {
-            initializeRooms(); // 重置房間和數字
-            updateTable(); // 更新顯示
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            if (!isNaN(playerCount) && playerCount >= 1 && playerCount <= 26) {
+                initializeRooms(playerCount); // 重置房間和數字
+                updateTable(); // 更新顯示
+            } else {
+                alert("請輸入有效的遊戲人數 (1-26)！");
+            }
         };
 
         document.getElementById('queryButton').onclick = function() {
