@@ -3,36 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>控制器</title>
+    <title>顯示器</title>
     <style>
         body {
-            background-color: #fdf8e4;
-            color: black;
+            background-color: #f0f0f0;
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .table-container {
-            width: 50%;
-            margin-right: 20px;
+            width: 80%; /* 設置表格容器寬度為 80% */
         }
         table {
             border-collapse: collapse;
-            width: 100%;
+            width: 100%; /* 表格佔滿容器 */
             text-align: center;
+            font-size: 1.5em; /* 調整字體大小 */
             margin-bottom: 20px;
         }
         th, td {
-            border: 1px solid black;
-            padding: 10px;
-        }
-        .input-container {
-            display: flex;
-            flex-direction: column;
-        }
-        input {
-            margin-bottom: 10px;
+            border: 2px solid #333;
+            padding: 15px; /* 增加內邊距 */
         }
     </style>
 </head>
@@ -78,53 +73,9 @@
             </tr>
         </table>
     </div>
-    <div class="input-container">
-        <input type="text" id="randomNumber" placeholder="隨機號碼 (1-99)">
-        <input type="text" id="realNumber" placeholder="真實數字 (1-26)">
-        <input type="text" id="fromRoomNumber" placeholder="當前房間號 (1-5)">
-        <input type="text" id="toRoomNumber" placeholder="目標房間號 (1-5)">
-        <button id="moveButton">移動</button>
-        <button id="eliminateButton">淘汰</button>
-        <button id="resetButton">重置所有數字</button>
-        <button id="assignButton">隨機分配房間</button>
-        <input type="text" id="queryInput" placeholder="查詢輸入格 (真實數字)">
-        <button id="queryButton">查詢</button>
-        <button id="hideButton">隱藏表格</button>
-        <a href="display.html">前往顯示器</a>
-        
-        <h2>設置遊戲人數</h2>
-        <input type="number" id="playerCount" placeholder="輸入遊戲人數 (1-26)" min="1" max="26">
-        <button id="setPlayerCountButton">設置人數</button>
-    </div>
     <script>
-        let rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
-        let playerCount = 26;
-
-        function generateUniqueRandomNumbers(count, min, max) {
-            const numbers = new Set();
-            while (numbers.size < count) {
-                const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
-                numbers.add(randomNum);
-            }
-            return Array.from(numbers);
-        }
-
-        function initializeRooms(count) {
-            const realNumbers = Array.from({ length: count }, (_, i) => i + 1);
-            const randomNumbers = generateUniqueRandomNumbers(count, 1, 99);
-            const newRooms = [[], [], [], [], [], []];
-
-            realNumbers.forEach((num, index) => {
-                const roomIndex = index % 5;
-                newRooms[roomIndex].push({ real: num, random: randomNumbers[index] });
-            });
-
-            newRooms[5] = [];
-            localStorage.setItem('rooms', JSON.stringify(newRooms));
-            rooms = newRooms;
-        }
-
-        function updateTable() {
+        function updateDisplay() {
+            const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
             for (let i = 0; i < 5; i++) {
                 const roomData = rooms[i].map(item => item.random).join(', ');
                 document.getElementById(`room${i + 1}`).innerText = roomData;
@@ -137,116 +88,7 @@
             document.getElementById('realEliminated').innerText = eliminated;
         }
 
-        document.getElementById('moveButton').onclick = function() {
-            const randomNumber = parseInt(document.getElementById('randomNumber').value);
-            const realNumber = parseInt(document.getElementById('realNumber').value);
-            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1;
-            const toRoomNumber = parseInt(document.getElementById('toRoomNumber').value) - 1;
-
-            let movedItem;
-            if (!isNaN(randomNumber)) {
-                const movedIndex = rooms[fromRoomNumber].findIndex(item => item.random === randomNumber);
-                if (movedIndex !== -1) {
-                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0];
-                } else {
-                    alert(`隨機號碼 ${randomNumber} 不在房間 ${fromRoomNumber + 1} 中`);
-                    return;
-                }
-            } else if (!isNaN(realNumber)) {
-                const movedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
-                if (movedIndex !== -1) {
-                    movedItem = rooms[fromRoomNumber].splice(movedIndex, 1)[0];
-                } else {
-                    alert(`真實數字 ${realNumber} 不在房間 ${fromRoomNumber + 1} 中`);
-                    return;
-                }
-            } else {
-                alert("請輸入隨機號碼或真實數字！");
-                return;
-            }
-
-            if (movedItem) {
-                rooms[toRoomNumber].push(movedItem);
-                localStorage.setItem('rooms', JSON.stringify(rooms));
-                updateTable();
-            }
-        };
-
-        document.getElementById('eliminateButton').onclick = function() {
-            const realNumber = parseInt(document.getElementById('realNumber').value);
-            const fromRoomNumber = parseInt(document.getElementById('fromRoomNumber').value) - 1;
-
-            const eliminatedIndex = rooms[fromRoomNumber].findIndex(item => item.real === realNumber);
-            if (eliminatedIndex !== -1) {
-                const eliminatedItem = rooms[fromRoomNumber].splice(eliminatedIndex, 1)[0];
-                rooms[5].push(eliminatedItem);
-                localStorage.setItem('rooms', JSON.stringify(rooms));
-                updateTable();
-            }
-        };
-
-        document.getElementById('resetButton').onclick = function() {
-            initializeRooms(playerCount);
-            updateTable();
-        };
-
-        document.getElementById('assignButton').onclick = function() {
-            const allParticipants = [];
-            for (let i = 0; i < 5; i++) {
-                allParticipants.push(...rooms[i]); // 收集所有未淘汰的參與者
-            }
-
-            // 清空所有房間
-            for (let i = 0; i < 5; i++) {
-                rooms[i] = [];
-            }
-
-            // 隨機分配參與者到房間
-            allParticipants.sort(() => Math.random() - 0.5); // 隨機打亂
-            allParticipants.forEach((participant, index) => {
-                const roomIndex = index % 5; // 將參與者分配到房間
-                rooms[roomIndex].push(participant);
-            });
-
-            localStorage.setItem('rooms', JSON.stringify(rooms));
-            updateTable();
-        };
-
-        document.getElementById('setPlayerCountButton').onclick = function() {
-            const count = parseInt(document.getElementById('playerCount').value);
-            if (!isNaN(count) && count >= 1 && count <= 26) {
-                playerCount = count;
-                alert(`遊戲人數已設置為 ${playerCount}`);
-            } else {
-                alert("請輸入有效的遊戲人數 (1-26)！");
-            }
-        };
-
-        document.getElementById('queryButton').onclick = function() {
-            const queryNumber = parseInt(document.getElementById('queryInput').value);
-            let found = false;
-
-            for (let i = 0; i < 5; i++) {
-                if (rooms[i].some(item => item.real === queryNumber)) {
-                    alert(`真實數字 ${queryNumber} 在 房間 ${i + 1}`);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                alert(`真實數字 ${queryNumber} 不在任何房間中`);
-            }
-        };
-
-        setInterval(function() {
-            const updatedRooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
-            if (JSON.stringify(updatedRooms) !== JSON.stringify(rooms)) {
-                rooms = updatedRooms;
-                updateTable();
-            }
-        }, 1000);
-
-        window.onload = updateTable;
+        window.onload = updateDisplay; // 當頁面加載時更新顯示
     </script>
 </body>
 </html>
