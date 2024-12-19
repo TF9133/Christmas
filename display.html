@@ -51,7 +51,20 @@
         </tr>
     </table>
     <script>
-        // 在這裡添加用於更新顯示器的 JavaScript 代碼
+        function updateDisplay() {
+            const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
+            for (let i = 0; i < 5; i++) {
+                const roomData = rooms[i].map(item => item.random).join(', ');
+                document.getElementById(`displayRoom${i + 1}`).innerText = roomData;
+            }
+            const eliminated = rooms[5].map(item => item.real).join(', ');
+            document.getElementById('displayEliminated').innerText = eliminated;
+        }
+
+        // 自動更新
+        setInterval(updateDisplay, 1000); // 每秒更新顯示
+
+        window.onload = updateDisplay; // 當頁面加載時更新顯示
     </script>
 </body>
 </html>
