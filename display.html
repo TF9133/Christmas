@@ -50,6 +50,16 @@
                 <td id="room5"></td>
             </tr>
         </table>
+
+        <h1>已淘汰參與者</h1>
+        <table>
+            <tr>
+                <th>已淘汰</th>
+            </tr>
+            <tr>
+                <td id="eliminated"></td>
+            </tr>
+        </table>
     </div>
     <script>
         function updateDisplay() {
@@ -58,6 +68,8 @@
                 const roomData = rooms[i].map(item => item.random).join(', ');
                 document.getElementById(`room${i + 1}`).innerText = roomData;
             }
+            const eliminated = rooms[5].map(item => item.real).join(', ');
+            document.getElementById('eliminated').innerText = eliminated;
         }
 
         window.onload = updateDisplay; // 當頁面加載時更新顯示
