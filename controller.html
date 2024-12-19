@@ -58,7 +58,6 @@
             </tr>
         </table>
 
-        <!-- 顯示真實數字的表格 -->
         <h1>真實數字和隨機號碼</h1>
         <table>
             <tr>
@@ -75,7 +74,7 @@
                 <td id="realRoom3"></td>
                 <td id="realRoom4"></td>
                 <td id="realRoom5"></td>
-                <td id="realEliminated"></td> <!-- 這裡顯示真實已淘汰的數字 -->
+                <td id="realEliminated"></td>
             </tr>
         </table>
     </div>
@@ -92,16 +91,7 @@
         <a href="display.html">前往顯示器</a>
     </div>
     <script>
-        // 初始化房間數據
-        const realNumbers = Array.from({length: 26}, (_, i) => i + 1); // 真實數字 1-26
-        const rooms = [[], [], [], [], [], []];
-        const randomNumbers = Array.from({length: 26}, () => Math.floor(Math.random() * 99) + 1); // 隨機數字 1-99
-
-        realNumbers.forEach((num, index) => {
-            rooms[index % 5].push({real: num, random: randomNumbers[index]});
-        });
-
-        localStorage.setItem('rooms', JSON.stringify(rooms));
+        const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
 
         function updateTable() {
             for (let i = 0; i < 5; i++) {
@@ -121,7 +111,6 @@
             const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
-            // 移除邏輯
             const removedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
             if (removedIndex !== -1) {
                 const removedItem = rooms[roomNumber].splice(removedIndex, 1)[0];
@@ -136,7 +125,6 @@
             const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
-            // 淘汰邏輯
             const eliminatedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
             if (eliminatedIndex !== -1) {
                 const eliminatedItem = rooms[roomNumber].splice(eliminatedIndex, 1)[0];
@@ -162,6 +150,16 @@
                 alert(`真實數字 ${queryNumber} 不在任何房間中`);
             }
         };
+
+        // 自動更新
+        setInterval(function() {
+            const updatedRooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
+            if (JSON.stringify(updatedRooms) !== JSON.stringify(rooms)) {
+                rooms.length = 0; // 清空原有數組
+                rooms.push(...updatedRooms); // 更新數據
+                updateTable(); // 更新表格顯示
+            }
+        }, 1000); // 每秒檢查一次
 
         window.onload = updateTable; // 當頁面加載時更新顯示
     </script>
