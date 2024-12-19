@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>號碼查詢</title>
+    <style>
+        body {
+            background-color: #fdf8e4;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>查詢你的號碼</h1>
+        <input type="number" id="realNumberInput" placeholder="輸入真實數字 (1-26)">
+        <button id="submitButton">提交</button>
+        <div class="result" id="resultMessage"></div>
+    </div>
+
+    <script>
+        const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
+
+        document.getElementById('submitButton').onclick = function() {
+            const realNumber = parseInt(document.getElementById('realNumberInput').value);
+            if (isNaN(realNumber) || realNumber < 1 || realNumber > 26) {
+                alert("請輸入有效的真實數字 (1-26)！");
+                return;
+            }
+
+            let found = false;
+            for (let i = 0; i < 5; i++) {
+                const participant = rooms[i].find(item => item.real === realNumber);
+                if (participant) {
+                    const randomNumber = participant.random;
+                    document.getElementById('resultMessage').innerText = `你的號碼為 ${randomNumber}，位於房間 ${i + 1}`;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                document.getElementById('resultMessage').innerText = "未找到該號碼。";
+            }
+        };
+    </script>
+</body>
+</html>
