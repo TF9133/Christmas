@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
-<html lang="zh-Hant"> 
-<head>  
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>控制器</title>  
+    <title>控制器</title>
     <style>
         body {
             background-color: #fdf8e4;
@@ -80,7 +80,8 @@
         </table>
     </div>
     <div class="input-container">
-        <input type="text" id="number" placeholder="號碼">
+        <input type="text" id="number" placeholder="號碼 (隨機數字)">
+        <input type="text" id="realNumber" placeholder="真實數字 (1-26)">
         <input type="text" id="roomNumber" placeholder="房間號 (1-5)">
         <input type="text" id="toRoomNumber" placeholder="被移房間號 (1-5)">
         <button id="removeButton">移除</button>
@@ -92,49 +93,54 @@
     </div>
     <script>
         // 初始化房間數據
-        const randomNumbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+        const realNumbers = Array.from({length: 26}, (_, i) => i + 1); // 真實數字 1-26
         const rooms = [[], [], [], [], [], []];
+        const randomNumbers = Array.from({length: 26}, () => Math.floor(Math.random() * 99) + 1); // 隨機數字 1-99
 
-        randomNumbers.forEach((num, index) => {
-            rooms[index % 5].push(num);
+        realNumbers.forEach((num, index) => {
+            rooms[index % 5].push({real: num, random: randomNumbers[index]});
         });
 
         localStorage.setItem('rooms', JSON.stringify(rooms));
 
         function updateTable() {
             for (let i = 0; i < 5; i++) {
-                document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
-                document.getElementById(`realRoom${i + 1}`).innerText = rooms[i].join(', '); // 更新真實數字表格
+                const roomData = rooms[i].map(item => item.random).join(', ');
+                document.getElementById(`room${i + 1}`).innerText = roomData;
+                
+                const realRoomData = rooms[i].map(item => item.real).join(', ');
+                document.getElementById(`realRoom${i + 1}`).innerText = realRoomData;
             }
-            document.getElementById('eliminated').innerText = rooms[5].join(', ');
-            document.getElementById('realEliminated').innerText = rooms[5].join(', '); // 確保兩個表格的已淘汰數字一致
+            const eliminated = rooms[5].map(item => item.real).join(', ');
+            document.getElementById('eliminated').innerText = eliminated;
+            document.getElementById('realEliminated').innerText = eliminated; // 確保兩個表格的已淘汰數字一致
         }
 
         document.getElementById('removeButton').onclick = function() {
-            const number = parseInt(document.getElementById('number').value);
+            const realNumber = parseInt(document.getElementById('realNumber').value);
             const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
             // 移除邏輯
-            const removedIndex = rooms[roomNumber].indexOf(number);
+            const removedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
             if (removedIndex !== -1) {
-                const removedNumber = rooms[roomNumber].splice(removedIndex, 1)[0];
-                rooms[5].push(removedNumber); // 移至已淘汰
+                const removedItem = rooms[roomNumber].splice(removedIndex, 1)[0];
+                rooms[5].push(removedItem); // 移至已淘汰
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
             }
         };
 
         document.getElementById('eliminateButton').onclick = function() {
-            const number = parseInt(document.getElementById('number').value);
+            const realNumber = parseInt(document.getElementById('realNumber').value);
             const roomNumber = parseInt(document.getElementById('roomNumber').value) - 1; // 調整索引
             const rooms = JSON.parse(localStorage.getItem('rooms'));
 
             // 淘汰邏輯
-            const eliminatedIndex = rooms[roomNumber].indexOf(number);
+            const eliminatedIndex = rooms[roomNumber].findIndex(item => item.real === realNumber);
             if (eliminatedIndex !== -1) {
-                const eliminatedNumber = rooms[roomNumber].splice(eliminatedIndex, 1)[0];
-                rooms[5].push(eliminatedNumber); // 移至已淘汰
+                const eliminatedItem = rooms[roomNumber].splice(eliminatedIndex, 1)[0];
+                rooms[5].push(eliminatedItem); // 移至已淘汰
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
             }
@@ -146,11 +152,11 @@
             let found = false;
 
             for (let i = 0; i < 5; i++) {
-                if (rooms[i].includes(queryNumber)) {
+                if (rooms[i].some(item => item.real === queryNumber)) {
                     alert(`真實數字 ${queryNumber} 在 房間 ${i + 1}`);
                     found = true;
                     break;
-                } 
+                }
             }
             if (!found) {
                 alert(`真實數字 ${queryNumber} 不在任何房間中`);
