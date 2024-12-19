@@ -11,60 +11,47 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         table {
             border-collapse: collapse;
-            width: 80%;
-            text-align: center;
-            font-size: 1.5em; /* 增大字體 */
+            width: 100%;
+            max-width: 800px; /* 設定最大寬度 */
+            margin: auto; /* 自動居中 */
         }
         th, td {
-            border: 1px solid black;
-            padding: 20px; /* 增大表格內邊距 */
+            border: 1px solid #202020; /* 設定邊框顏色 */
+            padding: 15px; /* 調整內邊距 */
+            text-align: center;
+            min-width: 100px; /* 設定最小寬度 */
         }
-        h1 {
-            margin-bottom: 20px;
+        th {
+            background-color: #202020; /* 標題背景顏色 */
+            color: white; /* 標題文字顏色 */
         }
     </style>
 </head>
 <body>
-    <div>
-        <h1>房間和隨機號碼</h1>
-        <table>
-            <tr>
-                <th>房間一</th>
-                <th>房間二</th>
-                <th>房間三</th>
-                <th>房間四</th>
-                <th>房間五</th>
-                <th>已淘汰</th>
-            </tr>
-            <tr>
-                <td id="room1"></td>
-                <td id="room2"></td>
-                <td id="room3"></td>
-                <td id="room4"></td>
-                <td id="room5"></td>
-                <td id="eliminated"></td>
-            </tr>
-        </table>
-    </div>
+    <h1>顯示器</h1>
+    <table>
+        <tr>
+            <th>房間一</th>
+            <th>房間二</th>
+            <th>房間三</th>
+            <th>房間四</th>
+            <th>房間五</th>
+            <th>已淘汰</th>
+        </tr>
+        <tr>
+            <td id="displayRoom1"></td>
+            <td id="displayRoom2"></td>
+            <td id="displayRoom3"></td>
+            <td id="displayRoom4"></td>
+            <td id="displayRoom5"></td>
+            <td id="displayEliminated"></td>
+        </tr>
+    </table>
     <script>
-        function updateDisplay() {
-            const rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
-            for (let i = 0; i < 5; i++) {
-                const roomData = rooms[i].map(item => item.random).join(', ');
-                document.getElementById(`room${i + 1}`).innerText = roomData;
-            }
-            const eliminated = rooms[5].map(item => item.real).join(', ');
-            document.getElementById('eliminated').innerText = eliminated; // 只顯示真實已淘汰的數字
-        }
-
-        window.onload = updateDisplay; // 當頁面加載時更新顯示
+        // 在這裡添加用於更新顯示器的 JavaScript 代碼
     </script>
 </body>
 </html>
