@@ -1,33 +1,90 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>顯示頁面</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>顯示器</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fdf8e4; /* 淡黃色背景 */
+      padding: 20px;
+      text-align: center;
+    }
+    .title {
+      font-size: 36px; /* 調整標題大小以適應頁面 */
+      margin-bottom: 20px;
+    }
+    .table {
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+    .table th, .table td {
+      border: 1px solid black;
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
+  <div class="title">顯示器: 隨機分配的號碼</div>
+  <table class="table" id="display-table">
+    <tr>
+      <th>房間</th>
+      <th>隨機號碼</th>
+      <th>農場狀態</th>
+    </tr>
+    <tr>
+      <td>房間一</td>
+      <td id="room1">-</td>
+      <td id="room1-status">-</td>
+    </tr>
+    <tr>
+      <td>房間二</td>
+      <td id="room2">-</td>
+      <td id="room2-status">-</td>
+    </tr>
+    <tr>
+      <td>房間三</td>
+      <td id="room3">-</td>
+      <td id="room3-status">-</td>
+    </tr>
+    <tr>
+      <td>房間四</td>
+      <td id="room4">-</td>
+      <td id="room4-status">-</td>
+    </tr>
+    <tr>
+      <td>房間五</td>
+      <td id="room5">-</td>
+      <td id="room5-status">-</td>
+    </tr>
+  </table>
 
-    <h2>顯示頁面</h2>
-    <p>輸入的數據為：<span id="displayText">無</span></p>
+  <script>
+    // 當網頁加載時，從 localStorage 取得數據並更新顯示
+    window.onload = function() {
+      const randomNumbers = JSON.parse(localStorage.getItem("randomNumbers")) || [];
+      const eliminated = JSON.parse(localStorage.getItem("eliminated")) || [];
 
-    <script>
-        function updateDisplay() {
-            const displayText = localStorage.getItem('sharedData') || '無';
-            document.getElementById('displayText').innerText = displayText;
-        }
+      // 把號碼分配到不同的房間
+      const rooms = [[], [], [], [], []];
+      randomNumbers.forEach(num => {
+        const roomIndex = Math.floor(Math.random() * 5); // 隨機分配到 5 個房間之一
+        rooms[roomIndex].push(num);
+      });
 
-        // 初始加載顯示內容
-        window.onload = updateDisplay;
-
-        // 每5秒更新顯示區域
-        setInterval(updateDisplay, 5000);
-    </script>
-
+      // 更新顯示器
+      for (let i = 1; i <= 5; i++) {
+        let roomData = rooms[i - 1];
+        document.getElementById(`room${i}`).textContent = roomData.join(', ') || '-';
+        document.getElementById(`room${i}-status`).textContent = roomData.length + ' 位';
+      }
+      
+      // 如果有被淘汰的號碼
+      if (eliminated.length > 0) {
+        console.log("被淘汰的號碼:", eliminated.join(', ')); // 在開發者控制台顯示
+      }
+    };
+  </script>
 </body>
 </html>
