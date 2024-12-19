@@ -95,6 +95,12 @@
         <h2>設置遊戲人數</h2>
         <input type="number" id="playerCount" placeholder="輸入遊戲人數 (1-26)" min="1" max="26">
         <button id="setPlayerCountButton">設置人數</button>
+
+        <!-- 新增隨機數字查詢 -->
+        <h2>查詢隨機數字</h2>
+        <input type="text" id="queryRandomNumber" placeholder="隨機數字 (1-99)">
+        <button id="queryRandomButton">查詢真實數字</button>
+        <div id="randomQueryResult" style="margin-top: 10px;"></div>
     </div>
     <script>
         let rooms = JSON.parse(localStorage.getItem('rooms')) || [[], [], [], [], [], []];
@@ -256,6 +262,26 @@
             }
             if (!found) {
                 alert(`真實數字 ${queryNumber} 不在任何房間中`);
+            }
+        };
+
+        // 新增隨機數字查詢功能
+        document.getElementById('queryRandomButton').onclick = function() {
+            const queryRandomNumber = parseInt(document.getElementById('queryRandomNumber').value);
+            let found = false;
+
+            for (let i = 0; i < 5; i++) {
+                const participant = rooms[i].find(item => item.random === queryRandomNumber);
+                if (participant) {
+                    const realNumber = participant.real;
+                    document.getElementById('randomQueryResult').innerText = `隨機號碼 ${queryRandomNumber} 對應的真實數字為 ${realNumber}，位於房間 ${i + 1}`;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                document.getElementById('randomQueryResult').innerText = "未找到該隨機號碼。";
             }
         };
 
