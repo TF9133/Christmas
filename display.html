@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顯示頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>顯示頁面</h2>
+    <p>輸入的數據為：<span id="displayText">無</span></p>
+
+    <script>
+        function updateDisplay() {
+            const displayText = localStorage.getItem('sharedData') || '無';
+            document.getElementById('displayText').innerText = displayText;
+        }
+
+        // 初始加載顯示內容
+        window.onload = updateDisplay;
+
+        // 每5秒更新顯示區域
+        setInterval(updateDisplay, 5000);
+    </script>
+
+</body>
+</html>
