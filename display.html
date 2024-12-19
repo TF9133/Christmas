@@ -38,18 +38,32 @@
         </tbody>
     </table>
 
+    <div class="title">已淘汰的號碼</div>
+    <div id="eliminated-numbers" class="table">
+        <p>目前沒有淘汰的號碼。</p>
+    </div>
+
     <script>
         function updateDisplay() {
             const randomNumbers = JSON.parse(localStorage.getItem("randomNumbers")) || [];
+            const eliminatedNumbers = JSON.parse(localStorage.getItem("eliminated")) || [];
 
             const tableBody = document.getElementById("table-body");
             tableBody.innerHTML = ""; // 清空表格內容
 
             randomNumbers.forEach((num, index) => {
                 const row = document.createElement("tr");
-                row.innerHTML = `<td>玩家 ${index + 1}</td><td>${num}</td><td>有效</td>`; // 假設所有號碼都是有效的
+                row.innerHTML = `<td>玩家 ${index + 1}</td><td>${num}</td><td>有效</td>`;
                 tableBody.appendChild(row);
             });
+
+            // 更新已淘汰的號碼
+            const eliminatedContainer = document.getElementById("eliminated-numbers");
+            if (eliminatedNumbers.length > 0) {
+                eliminatedContainer.innerHTML = eliminatedNumbers.join(', ');
+            } else {
+                eliminatedContainer.innerHTML = "<p>目前沒有淘汰的號碼。</p>";
+            }
         }
 
         // 每 1 秒更新顯示器
