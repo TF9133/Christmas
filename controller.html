@@ -21,6 +21,7 @@
             border-collapse: collapse;
             width: 100%;
             text-align: center;
+            margin-bottom: 20px; /* 新表格與其它元素的間距 */
         }
         th, td {
             border: 1px solid black;
@@ -56,14 +57,35 @@
                 <td id="eliminated"></td>
             </tr>
         </table>
+
+        <!-- 顯示真實數字的表格 -->
+        <h1>真實數字和隨機號碼</h1>
+        <table>
+            <tr>
+                <th>房間一</th>
+                <th>房間二</th>
+                <th>房間三</th>
+                <th>房間四</th>
+                <th>房間五</th>
+                <th>已淘汰</th>
+            </tr>
+            <tr>
+                <td id="realRoom1"></td>
+                <td id="realRoom2"></td>
+                <td id="realRoom3"></td>
+                <td id="realRoom4"></td>
+                <td id="realRoom5"></td>
+                <td id="realEliminated"></td>
+            </tr>
+        </table>
     </div>
     <div class="input-container">
         <input type="text" id="number" placeholder="號碼">
-        <input type="text" id="roomNumber" placeholder="房間號">
-        <input type="text" id="toRoomNumber" placeholder="被移房間號">
+        <input type="text" id="roomNumber" placeholder="房間號 (1-5)">
+        <input type="text" id="toRoomNumber" placeholder="被移房間號 (1-5)">
         <button id="removeButton">移除</button>
         <button id="eliminateButton">淘汰</button>
-        <input type="text" id="queryInput" placeholder="查詢輸入格">
+        <input type="text" id="queryInput" placeholder="查詢輸入格 (真實數字)">
         <button id="queryButton">查詢</button>
         <button id="hideButton">隱藏表格</button>
         <a href="display.html">前往顯示器</a>
@@ -82,8 +104,10 @@
         function updateTable() {
             for (let i = 0; i < 5; i++) {
                 document.getElementById(`room${i + 1}`).innerText = rooms[i].join(', ');
+                document.getElementById(`realRoom${i + 1}`).innerText = rooms[i].join(', '); // 更新真實數字表格
             }
             document.getElementById('eliminated').innerText = rooms[5].join(', ');
+            document.getElementById('realEliminated').innerText = rooms[5].join(', '); // 更新已淘汰數字表格
         }
 
         document.getElementById('removeButton').onclick = function() {
@@ -113,6 +137,23 @@
                 rooms[5].push(eliminatedNumber); // 移至已淘汰
                 localStorage.setItem('rooms', JSON.stringify(rooms));
                 updateTable(); // 更新顯示
+            }
+        };
+
+        document.getElementById('queryButton').onclick = function() {
+            const queryNumber = parseInt(document.getElementById('queryInput').value);
+            const rooms = JSON.parse(localStorage.getItem('rooms'));
+            let found = false;
+
+            for (let i = 0; i < 5; i++) {
+                if (rooms[i].includes(queryNumber)) {
+                    alert(`真實數字 ${queryNumber} 在 房間 ${i + 1}`);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                alert(`真實數字 ${queryNumber} 不在任何房間中`);
             }
         };
 
